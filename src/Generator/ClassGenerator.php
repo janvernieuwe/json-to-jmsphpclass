@@ -3,6 +3,7 @@
 namespace App\Generator;
 
 use App\Context\ClassContext;
+use App\Context\PropertyContext;
 use Zend\Code\Generator\DocBlockGenerator;
 use Zend\Code\Generator\FileGenerator;
 use Zend\Code\Generator\MethodGenerator;
@@ -20,17 +21,6 @@ class ClassGenerator
         $generator = new \Zend\Code\Generator\ClassGenerator(ucfirst($data->getName()), $data->getNamespace());
         $generator->addUse('JMS\Serializer\Annotation', 'JMS');
         foreach ($data->getProperties() as $property) {
-//            if (strpos($property->getType(), '\\') !== false) {
-//                $generator->addUse($property->getUseType());
-//            }
-            $tags = [
-                ['name' => 'var', 'description' => $property->getAnnotatedType()],
-                ['name' => sprintf('JMS\\Type("%s")', $property->getType())],
-            ];
-            if (strtolower($property->getName()) !== $property->getName()) {
-                $tags[] = ['name' => sprintf('JMS\\SerializedName("%s")', $property->getName())];
-            }
-
             $generator->addPropertyFromGenerator(
                 PropertyGenerator::fromArray(
                     [
@@ -39,7 +29,7 @@ class ClassGenerator
                         'omitdefaultvalue' => true,
                         'flags'            => 0,
                         'visibility'       => PropertyGenerator::VISIBILITY_PRIVATE,
-                        'docblock'         => DocBlockGenerator::fromArray(['tags' => $tags]),
+                        'docblock'         => DocBlockGenerator::fromArray(['tags' => self::parseTags($property)]),
                     ]
                 )
             );
@@ -69,5 +59,22 @@ class ClassGenerator
         $fgen->setClass($generator);
 
         return $fgen->generate();
+    }
+
+    /**
+     * @param PropertyContext $property
+     * @return array
+     */
+    private static function parseTags(PropertyContext $property): array
+    {
+        $tags = [
+            ['name' => 'var', 'description' => $property->getAnnotatedType()],
+            ['name' => sprintf('JMS\\Type("%s")', $property->getType())],
+        ];
+        if (strtolower($property->getName()) !== $property->getName()) {
+            $tags[] = ['name' => sprintf('JMS\\SerializedName("%s")', $property->getName())];
+        }
+
+        return $tags;
     }
 }

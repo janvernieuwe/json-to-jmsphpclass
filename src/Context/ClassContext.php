@@ -74,7 +74,10 @@ class ClassContext
         return $this;
     }
 
-    public function getFilePath()
+    /**
+     * @return string
+     */
+    public function getFilePath(): string
     {
         return $this->name.'.php';
     }

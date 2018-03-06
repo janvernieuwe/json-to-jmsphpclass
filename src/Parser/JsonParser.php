@@ -15,12 +15,18 @@ class JsonParser
      */
     private $classes = [];
 
+    /**
+     * @param string $className
+     * @param string $namespace
+     * @param string $json
+     * @return array
+     */
     public function parse(string $className, string $namespace, string $json): array
     {
         $this->classes = [];
         $data = json_decode($json);
 
-        if (is_array($data)) {
+        if (\is_array($data)) {
             $this->parseClass($className, $namespace, $data[0]);
 
             return $this->classes;
@@ -67,6 +73,11 @@ class JsonParser
         $this->classes[] = $class;
     }
 
+    /**
+     * @param $value
+     * @param string $namespace
+     * @return string
+     */
     protected function getType($value, string $namespace): string
     {
         if (\is_string($value) && strpos($value, $namespace) === 0) {

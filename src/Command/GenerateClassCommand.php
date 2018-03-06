@@ -30,6 +30,7 @@ class GenerateClassCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        // Input
         $io = new SymfonyStyle($input, $output);
         $namespace = $io->ask('namespace', 'App');
         $dest = $io->ask('destination to put files in', 'src');
@@ -37,6 +38,7 @@ class GenerateClassCommand extends ContainerAwareCommand
         $inputFile = $io->ask('input file', 'source.json');
         $json = file_get_contents($inputFile);
 
+        // Parse the json into contexts
         $io->section('Parse json');
         $parser = new JsonParser();
         $data = $parser->parse($className, $namespace, $json);
@@ -45,6 +47,7 @@ class GenerateClassCommand extends ContainerAwareCommand
         }
         $io->success('Json parsed');
 
+        // Generate classes from the contexts
         $io->section('Generate classes');
         /** @var ClassContext $class */
         foreach ($data as $class) {
