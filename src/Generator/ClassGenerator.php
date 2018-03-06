@@ -20,9 +20,9 @@ class ClassGenerator
         $generator = new \Zend\Code\Generator\ClassGenerator(ucfirst($data->getName()), $data->getNamespace());
         $generator->addUse('JMS\Serializer\Annotation', 'JMS');
         foreach ($data->getProperties() as $property) {
-            if (strpos($property->getType(), '\\') !== false) {
-                $generator->addUse($property->getUseType());
-            }
+//            if (strpos($property->getType(), '\\') !== false) {
+//                $generator->addUse($property->getUseType());
+//            }
             $tags = [
                 ['name' => 'var', 'description' => $property->getAnnotatedType()],
                 ['name' => sprintf('JMS\\Type("%s")', $property->getType())],
