@@ -58,7 +58,10 @@ class PropertyContext
     public function getAnnotatedType(): string
     {
         if (strpos($this->type, 'array<') === 0) {
-            return $this->getUseType().'[]';
+            return '\\'.$this->getUseType().'[]';
+        }
+        if (strpos($this->type, '\\') !== false) {
+            return '\\'.$this->type;
         }
 
         return $this->type;

@@ -19,6 +19,12 @@ class JsonParser
     {
         $this->classes = [];
         $data = json_decode($json);
+
+        if (is_array($data)) {
+            $this->parseClass($className, $namespace, $data[0]);
+
+            return $this->classes;
+        }
         $this->parseClass($className, $namespace, $data);
 
         return $this->classes;
@@ -52,7 +58,7 @@ class JsonParser
         }
         unset($value);
         // Parse a single class
-        $class = new ClassContext($name, 'App');
+        $class = new ClassContext($name, $namespace);
         foreach ($data as $key => &$value) {
             $value = $this->getType($value, $namespace);
             $class->addProperty(new PropertyContext($key, $value));
