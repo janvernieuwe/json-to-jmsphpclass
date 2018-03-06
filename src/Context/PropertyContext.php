@@ -40,4 +40,27 @@ class PropertyContext
     {
         return $this->type;
     }
+
+    public function getReturnType(): string
+    {
+        if (strpos($this->type, 'array<') === 0) {
+            return 'array';
+        }
+
+        return $this->type;
+    }
+
+    public function getUseType()
+    {
+        return str_replace(['array<', '>'], '', $this->type);
+    }
+
+    public function getAnnotatedType(): string
+    {
+        if (strpos($this->type, 'array<') === 0) {
+            return $this->getUseType().'[]';
+        }
+
+        return $this->type;
+    }
 }

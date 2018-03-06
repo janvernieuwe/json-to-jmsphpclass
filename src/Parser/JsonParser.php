@@ -18,30 +18,62 @@ class JsonParser
     public function parse(string $className, string $namespace, string $json): array
     {
         $this->classes = [];
-        $data = json_decode($json, JSON_OBJECT_AS_ARRAY);
+        $data = json_decode($json);
         $this->parseClass($className, $namespace, $data);
 
         return $this->classes;
     }
 
-    private function parseClass(string $name, string $namespace, array $data): void
+    /**
+     * @param string $name
+     * @param string $namespace
+     * @param \stdClass $data
+     */
+    private function parseClass(string $name, string $namespace, \stdClass $data): void
     {
         foreach ($data as $key => &$value) {
-            if (\is_array($value)) {
+            // Recursively add sub classes
+            if (\is_object($value)) {
                 $this->parseClass($key, $namespace, $value);
-                $value = $namespace. '\\'.ucfirst($key);
+                $value = $namespace.'\\'.ucfirst($key);
+                continue;
+            }
+            // Detect array of a class
+            if (\is_array($value)) {
+                if (!\count($value)) {
+                    continue;
+                }
+                $key = rtrim($key, 's');
+                $this->parseClass($key, $namespace, $value[0]);
+                $value = $namespace.'\\'.ucfirst($key);
+                $value = sprintf('array<%s>', $value);
                 continue;
             }
         }
         unset($value);
+        // Parse a single class
         $class = new ClassContext($name, 'App');
         foreach ($data as $key => &$value) {
-            if (strpos($value, $namespace) !== 0) {
-                $value = \gettype($value);
-            }
+            $value = $this->getType($value, $namespace);
             $class->addProperty(new PropertyContext($key, $value));
         }
         unset($value);
         $this->classes[] = $class;
+    }
+
+    protected function getType($value, string $namespace): string
+    {
+        if (\is_string($value) && strpos($value, $namespace) === 0) {
+            return $value;
+        }
+        if (\is_string($value) && stripos($value, 'array<') === 0) {
+            return $value;
+        }
+        $value = \gettype($value);
+        if ($value === 'integer') {
+            $value = 'int';
+        }
+
+        return $value;
     }
 }

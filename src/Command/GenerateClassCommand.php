@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Context\ClassContext;
 use App\Generator\ClassGenerator;
 use App\Parser\JsonParser;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -22,34 +23,10 @@ class GenerateClassCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
-//        $namespace = $io->ask('namespace');
-//        $className = $io->ask('class name');
-//        $json = $io->ask('json content');
-        $namespace = 'App';
-        $className = 'User';
-        $json = ' {
-    "id": 1,
-    "name": "Leanne Graham",
-    "username": "Bret",
-    "email": "Sincere@april.biz",
-    "address": {
-      "street": "Kulas Light",
-      "suite": "Apt. 556",
-      "city": "Gwenborough",
-      "zipcode": "92998-3874",
-      "geo": {
-        "lat": "-37.3159",
-        "lng": "81.1496"
-      }
-    },
-    "phone": "1-770-736-8031 x56442",
-    "website": "hildegard.org",
-    "company": {
-      "name": "Romaguera-Crona",
-      "catchPhrase": "Multi-layered client-server neural-net",
-      "bs": "harness real-time e-markets"
-    }
-  }';
+        $namespace = $io->ask('namespace');
+        $dest = $io->ask('destination to put files in', 'src');
+        $className = $io->ask('class name');
+        $json = $io->ask('json content');
 
         $parser = new JsonParser();
         $data = $parser->parse(
@@ -58,8 +35,13 @@ class GenerateClassCommand extends ContainerAwareCommand
             $json
         );
 
+        if (!is_dir($dest) && !mkdir($dest, 0777, true) && !is_dir($dest)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $dest));
+        }
+        /** @var ClassContext $class */
         foreach ($data as $class) {
-            $io->writeln(ClassGenerator::generate($class));
+            file_put_contents($dest.DIRECTORY_SEPARATOR.$class->getFilePath(), ClassGenerator::generate($class));
+            $io->writeln(sprintf('Generated class %s', $class));
         }
     }
 }

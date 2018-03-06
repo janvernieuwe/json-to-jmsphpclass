@@ -29,9 +29,14 @@ class ClassContext
      */
     public function __construct(string $name, string $namespace, array $properties = [])
     {
-        $this->name = $name;
+        $this->name = ucfirst($name);
         $this->namespace = $namespace;
         $this->properties = $properties;
+    }
+
+    public function __toString()
+    {
+        return $this->name;
     }
 
     /**
@@ -67,5 +72,10 @@ class ClassContext
         $this->properties[] = $property;
 
         return $this;
+    }
+
+    public function getFilePath()
+    {
+        return $this->name.'.php';
     }
 }
