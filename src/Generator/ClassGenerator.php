@@ -24,7 +24,7 @@ class ClassGenerator
                 $generator->addUse($property->getUseType());
             }
             $tags = [
-                ['name' => 'var', 'description' => $property->getType()],
+                ['name' => 'var', 'description' => $property->getAnnotatedType()],
                 ['name' => sprintf('JMS\\Type("%s")', $property->getType())],
             ];
             if (strtolower($property->getName()) !== $property->getName()) {

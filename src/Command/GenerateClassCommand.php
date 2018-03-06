@@ -12,7 +12,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class GenerateClassCommand extends ContainerAwareCommand
 {
-    protected function configure()
+    /**
+     * @inheritdoc
+     */
+    protected function configure(): void
     {
         $this
             ->setName('json:php:generate')
@@ -20,28 +23,34 @@ class GenerateClassCommand extends ContainerAwareCommand
             ->setHelp('Convert json to php classes');
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|null|void
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);
-        $namespace = $io->ask('namespace');
+        $namespace = $io->ask('namespace', 'App');
         $dest = $io->ask('destination to put files in', 'src');
         $className = $io->ask('class name');
-        $json = $io->ask('json content');
+        $inputFile = $io->ask('input file', 'source.json');
+        $json = file_get_contents($inputFile);
 
+        $io->section('Parse json');
         $parser = new JsonParser();
-        $data = $parser->parse(
-            $className,
-            $namespace,
-            $json
-        );
-
+        $data = $parser->parse($className, $namespace, $json);
         if (!is_dir($dest) && !mkdir($dest, 0777, true) && !is_dir($dest)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $dest));
         }
+        $io->success('Json parsed');
+
+        $io->section('Generate classes');
         /** @var ClassContext $class */
         foreach ($data as $class) {
             file_put_contents($dest.DIRECTORY_SEPARATOR.$class->getFilePath(), ClassGenerator::generate($class));
             $io->writeln(sprintf('Generated class %s', $class));
         }
+        $io->success('All classes have been generated');
     }
 }
