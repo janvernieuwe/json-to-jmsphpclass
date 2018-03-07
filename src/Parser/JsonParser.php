@@ -46,6 +46,7 @@ class JsonParser
         foreach ($data as $key => &$value) {
             // Recursively add sub classes
             if (\is_object($value)) {
+                $key = $this->ensureUniqueKey($key);
                 $this->parseClass($key, $namespace, $value);
                 $value = $namespace.'\\'.ucfirst($key);
                 continue;
@@ -55,7 +56,11 @@ class JsonParser
                 if (!\count($value)) {
                     continue;
                 }
+                if (!\is_object($value[0])) {
+                    continue;
+                }
                 $key = rtrim($key, 's');
+                $key = $this->ensureUniqueKey($key);
                 $this->parseClass($key, $namespace, $value[0]);
                 $value = $namespace.'\\'.ucfirst($key);
                 $value = sprintf('array<%s>', $value);
@@ -70,7 +75,7 @@ class JsonParser
             $class->addProperty(new PropertyContext($key, $value));
         }
         unset($value);
-        $this->classes[] = $class;
+        $this->classes[$class->getName()] = $class;
     }
 
     /**
@@ -92,5 +97,18 @@ class JsonParser
         }
 
         return $value;
+    }
+
+    /**
+     * @param string $key
+     * @return string
+     */
+    protected function ensureUniqueKey(string $key): string
+    {
+        if (array_key_exists($key, $this->classes)) {
+            $key .= sha1(uniqid('_', true));
+        }
+
+        return $key;
     }
 }
