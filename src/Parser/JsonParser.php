@@ -95,6 +95,9 @@ class JsonParser
         if ($value === 'integer') {
             $value = 'int';
         }
+        if ($value === 'NULL') {
+            $value = 'string';
+        }
 
         return $value;
     }
