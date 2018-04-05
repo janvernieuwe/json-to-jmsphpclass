@@ -12,6 +12,8 @@ class NameNormalizer
 
     private const PREG_VALID_PHP_LABEL = '/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/';
 
+    private const INVALID_CHAR_REPLACEMENT_CHAR = '_';
+
     /**
      * @param string $name
      *
@@ -19,12 +21,22 @@ class NameNormalizer
      */
     public static function normalizeName(string $name): string
     {
+        $name = mb_convert_encoding($name,
+          'ASCII'); // This replaces non-ascii characters with ?
         preg_match_all('/_/', $name, $matches, PREG_OFFSET_CAPTURE, 1);
         foreach ($matches[0] as $match) {
             $position = $match[1];
             $name[$position + 1] = strtoupper($name[$position + 1]);
         }
-        return str_replace('_', '', $name);
+
+        $name = str_replace(['_', '?'],
+          ['', self::INVALID_CHAR_REPLACEMENT_CHAR], $name);
+
+        if (is_numeric($name[0])) {
+            $name = self::INVALID_CHAR_REPLACEMENT_CHAR.$name;
+        }
+
+        return $name;
     }
 
     /**
