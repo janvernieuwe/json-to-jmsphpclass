@@ -8,6 +8,7 @@ use Zend\Code\Generator\DocBlockGenerator;
 use Zend\Code\Generator\FileGenerator;
 use Zend\Code\Generator\MethodGenerator;
 use Zend\Code\Generator\PropertyGenerator;
+use App\Normalizer\NameNormalizer;
 
 class ClassGenerator
 {
@@ -24,7 +25,7 @@ class ClassGenerator
             $generator->addPropertyFromGenerator(
                 PropertyGenerator::fromArray(
                     [
-                        'name'             => $property->getName(),
+                        'name'             => NameNormalizer::normalizePropertyName(NameNormalizer::normalizePropertyName($property->getName())),
                         'const'            => false,
                         'omitdefaultvalue' => true,
                         'flags'            => 0,
@@ -36,10 +37,10 @@ class ClassGenerator
             $generator->addMethodFromGenerator(
                 MethodGenerator::fromArray(
                     [
-                        'name'       => 'get'.ucfirst($property->getName()),
+                        'name'       => 'get'.ucfirst(NameNormalizer::normalizePropertyName($property->getName())),
                         'parameters' => [],
                         'visibility' => MethodGenerator::VISIBILITY_PUBLIC,
-                        'body'       => sprintf('return $this->%s;', $property->getName()),
+                        'body'       => sprintf('return $this->%s;', NameNormalizer::normalizePropertyName($property->getName())),
                         'returntype' => $property->getReturnType(),
                         'docblock'   => DocBlockGenerator::fromArray(
                             [
@@ -71,9 +72,9 @@ class ClassGenerator
             ['name' => 'var', 'description' => $property->getAnnotatedType()],
             ['name' => sprintf('JMS\\Type("%s")', $property->getType())],
         ];
-        if (strtolower($property->getName()) !== $property->getName()) {
+         if ($property->getName() !== NameNormalizer::normalizePropertyName($property->getName())) {
             $tags[] = ['name' => sprintf('JMS\\SerializedName("%s")', $property->getName())];
-        }
+         }
 
         return $tags;
     }

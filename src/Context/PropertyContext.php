@@ -4,6 +4,7 @@ namespace App\Context;
 
 class PropertyContext
 {
+
     /**
      * @var string
      */
@@ -16,6 +17,7 @@ class PropertyContext
 
     /**
      * PropertyContext constructor.
+     *
      * @param string $name
      * @param string $type
      */
