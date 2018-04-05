@@ -2,6 +2,8 @@
 
 namespace App\Context;
 
+use App\Normalizer\NameNormalizer;
+
 class PropertyContext
 {
 
@@ -33,6 +35,16 @@ class PropertyContext
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @return string
+     *
+     * @throws \Exception
+     */
+    public function getNormalizedName(): string
+    {
+        return NameNormalizer::normalizePropertyName($this->getName());
     }
 
     /**

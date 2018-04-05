@@ -8,24 +8,27 @@ use Zend\Code\Generator\DocBlockGenerator;
 use Zend\Code\Generator\FileGenerator;
 use Zend\Code\Generator\MethodGenerator;
 use Zend\Code\Generator\PropertyGenerator;
-use App\Normalizer\NameNormalizer;
 
 class ClassGenerator
 {
+
     /**
      * @param ClassContext $data
+     *
      * @return string
+     *
      * @throws \Zend\Code\Generator\Exception\InvalidArgumentException
+     * @throws \Exception
      */
     public static function generate(ClassContext $data)
     {
-        $generator = new \Zend\Code\Generator\ClassGenerator(ucfirst($data->getName()), $data->getNamespace());
+        $generator = new \Zend\Code\Generator\ClassGenerator($data->getNormalizedName(), $data->getNamespace());
         $generator->addUse('JMS\Serializer\Annotation', 'JMS');
         foreach ($data->getProperties() as $property) {
             $generator->addPropertyFromGenerator(
                 PropertyGenerator::fromArray(
                     [
-                        'name'             => NameNormalizer::normalizePropertyName(NameNormalizer::normalizePropertyName($property->getName())),
+                        'name'             => $property->getNormalizedName(),
                         'const'            => false,
                         'omitdefaultvalue' => true,
                         'flags'            => 0,
@@ -37,10 +40,10 @@ class ClassGenerator
             $generator->addMethodFromGenerator(
                 MethodGenerator::fromArray(
                     [
-                        'name'       => 'get'.ucfirst(NameNormalizer::normalizePropertyName($property->getName())),
+                        'name'       => 'get'.ucfirst($property->getNormalizedName()),
                         'parameters' => [],
                         'visibility' => MethodGenerator::VISIBILITY_PUBLIC,
-                        'body'       => sprintf('return $this->%s;', NameNormalizer::normalizePropertyName($property->getName())),
+                        'body'       => sprintf('return $this->%s;', $property->getNormalizedName()),
                         'returntype' => $property->getReturnType(),
                         'docblock'   => DocBlockGenerator::fromArray(
                             [
@@ -56,6 +59,7 @@ class ClassGenerator
                 )
             );
         }
+
         $fgen = new FileGenerator();
         $fgen->setClass($generator);
 
@@ -64,7 +68,10 @@ class ClassGenerator
 
     /**
      * @param PropertyContext $property
+     *
      * @return array
+     *
+     * @throws \Exception
      */
     private static function parseTags(PropertyContext $property): array
     {
@@ -72,7 +79,7 @@ class ClassGenerator
             ['name' => 'var', 'description' => $property->getAnnotatedType()],
             ['name' => sprintf('JMS\\Type("%s")', $property->getType())],
         ];
-         if ($property->getName() !== NameNormalizer::normalizePropertyName($property->getName())) {
+         if ($property->getName() !== $property->getNormalizedName()) {
             $tags[] = ['name' => sprintf('JMS\\SerializedName("%s")', $property->getName())];
          }
 
