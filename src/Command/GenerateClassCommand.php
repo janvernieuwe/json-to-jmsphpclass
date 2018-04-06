@@ -26,7 +26,10 @@ class GenerateClassCommand extends ContainerAwareCommand
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
+     *
      * @return int|null|void
+     *
+     * @throws \Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -51,8 +54,8 @@ class GenerateClassCommand extends ContainerAwareCommand
         $io->section('Generate classes');
         /** @var ClassContext $class */
         foreach ($data as $class) {
-            file_put_contents($dest.DIRECTORY_SEPARATOR.$class->getFilePath(), ClassGenerator::generate($class));
-            $io->writeln(sprintf('Generated class %s', $class));
+            file_put_contents($dest.DIRECTORY_SEPARATOR.$class->getNormalizedName().'.php', ClassGenerator::generate($class));
+            $io->writeln(sprintf('Generated class %s', $class->getNormalizedName()));
         }
         $io->success('All classes have been generated');
     }

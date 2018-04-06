@@ -1,11 +1,10 @@
 <?php
 
-
 namespace App\Parser;
-
 
 use App\Context\ClassContext;
 use App\Context\PropertyContext;
+use App\Normalizer\NameNormalizer;
 
 class JsonParser
 {
@@ -40,6 +39,8 @@ class JsonParser
      * @param string $name
      * @param string $namespace
      * @param \stdClass $data
+     *
+     * @throws \Exception
      */
     private function parseClass(string $name, string $namespace, \stdClass $data): void
     {
@@ -48,7 +49,7 @@ class JsonParser
             if (\is_object($value)) {
                 $key = $this->ensureUniqueKey($key);
                 $this->parseClass($key, $namespace, $value);
-                $value = $namespace.'\\'.ucfirst($key);
+                $value = $namespace.'\\'. NameNormalizer::normalizeClassName($key);
                 continue;
             }
             // Detect array of a class
@@ -62,7 +63,7 @@ class JsonParser
                 $key = rtrim($key, 's');
                 $key = $this->ensureUniqueKey($key);
                 $this->parseClass($key, $namespace, $value[0]);
-                $value = $namespace.'\\'.ucfirst($key);
+                $value = $namespace.'\\'.NameNormalizer::normalizeClassName($key);
                 $value = sprintf('array<%s>', $value);
                 continue;
             }

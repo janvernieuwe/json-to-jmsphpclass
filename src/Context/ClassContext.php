@@ -3,6 +3,7 @@
 
 namespace App\Context;
 
+use App\Normalizer\NameNormalizer;
 
 class ClassContext
 {
@@ -49,6 +50,16 @@ class ClassContext
 
     /**
      * @return string
+     *
+     * @throws \Exception
+     */
+    public function getNormalizedName(): string
+    {
+        return NameNormalizer::normalizeClassName($this->getName());
+    }
+
+    /**
+     * @return string
      */
     public function getNamespace(): string
     {
@@ -72,14 +83,6 @@ class ClassContext
         $this->properties[] = $property;
 
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFilePath(): string
-    {
-        return $this->name.'.php';
     }
 
     /**
