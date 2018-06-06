@@ -79,9 +79,9 @@ class ClassGenerator
             ['name' => 'var', 'description' => $property->getAnnotatedType()],
             ['name' => sprintf('JMS\\Type("%s")', $property->getType())],
         ];
-         if ($property->getName() !== $property->getNormalizedName()) {
+        if ($property->getName() !== $property->getNormalizedName() || preg_match('/[A-Z]/', $property->getName())) {
             $tags[] = ['name' => sprintf('JMS\\SerializedName("%s")', $property->getName())];
-         }
+        }
 
         return $tags;
     }

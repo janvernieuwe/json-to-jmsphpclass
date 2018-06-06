@@ -21,16 +21,21 @@ class NameNormalizer
      */
     public static function normalizeName(string $name): string
     {
-        $name = mb_convert_encoding($name,
-          'ASCII'); // This replaces non-ascii characters with ?
+        $name = mb_convert_encoding(
+            $name,
+            'ASCII'
+        ); // This replaces non-ascii characters with ?
         preg_match_all('/_/', $name, $matches, PREG_OFFSET_CAPTURE, 1);
         foreach ($matches[0] as $match) {
             $position = $match[1];
             $name[$position + 1] = strtoupper($name[$position + 1]);
         }
 
-        $name = str_replace(['_', '?'],
-          ['', self::INVALID_CHAR_REPLACEMENT_CHAR], $name);
+        $name = str_replace(
+            ['_', '?'],
+            ['', self::INVALID_CHAR_REPLACEMENT_CHAR],
+            $name
+        );
 
         if (is_numeric($name[0])) {
             $name = self::INVALID_CHAR_REPLACEMENT_CHAR.$name;
@@ -52,8 +57,12 @@ class NameNormalizer
         $name[0] = strtolower($name[0]);
 
         if (!preg_match(self::PREG_VALID_PHP_LABEL, $name)) {
-            throw new \Exception(sprintf('Property name %s is not a valid PHP label',
-              $name));
+            throw new \Exception(
+                sprintf(
+                    'Property name %s is not a valid PHP label',
+                    $name
+                )
+            );
         }
 
         return $name;
@@ -72,8 +81,12 @@ class NameNormalizer
         $name[0] = strtoupper($name[0]);
 
         if (!preg_match(self::PREG_VALID_PHP_LABEL, $name)) {
-            throw new \Exception(sprintf('Class name %s is not a valid PHP label',
-              $name));
+            throw new \Exception(
+                sprintf(
+                    'Class name %s is not a valid PHP label',
+                    $name
+                )
+            );
         }
 
         return $name;
