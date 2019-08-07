@@ -26,15 +26,7 @@ class PropertyContext
     public function __construct(string $name, string $type)
     {
         $this->name = $name;
-        $this->type = $type;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
+        $this->type = str_replace('boolean', 'bool', $type);
     }
 
     /**
@@ -45,6 +37,14 @@ class PropertyContext
     public function getNormalizedName(): string
     {
         return NameNormalizer::normalizePropertyName($this->getName());
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
     }
 
     /**
@@ -70,14 +70,6 @@ class PropertyContext
     /**
      * @return string
      */
-    private function getUseType(): string
-    {
-        return str_replace(['array<', '>'], '', $this->type);
-    }
-
-    /**
-     * @return string
-     */
     public function getAnnotatedType(): string
     {
         if (strpos($this->type, 'array<') === 0) {
@@ -88,5 +80,13 @@ class PropertyContext
         }
 
         return $this->type;
+    }
+
+    /**
+     * @return string
+     */
+    private function getUseType(): string
+    {
+        return str_replace(['array<', '>'], '', $this->type);
     }
 }

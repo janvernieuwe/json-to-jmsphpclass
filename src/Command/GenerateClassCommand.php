@@ -6,9 +6,11 @@ use App\Context\ClassContext;
 use App\Generator\ClassGenerator;
 use App\Parser\JsonParser;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Helper\ProcessHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Process\Process;
 
 class GenerateClassCommand extends ContainerAwareCommand
 {
@@ -36,7 +38,7 @@ class GenerateClassCommand extends ContainerAwareCommand
         // Input
         $io = new SymfonyStyle($input, $output);
         $namespace = $io->ask('namespace', 'App');
-        $dest = $io->ask('destination to put files in', 'src');
+        $dest = $io->ask('destination to put files in', 'output');
         $className = $io->ask('class name');
         $inputFile = $io->ask('input file', 'source.json');
         $json = file_get_contents($inputFile);
@@ -58,5 +60,11 @@ class GenerateClassCommand extends ContainerAwareCommand
             $io->writeln(sprintf('Generated class %s', $class->getNormalizedName()));
         }
         $io->success('All classes have been generated');
+        $cmd = sprintf('find %s/*.php -type f -exec vendor/bin/phpcbf --standard=PSR2 {} \;',$dest);
+        $phpcs = new Process($cmd);
+        $phpcs->run();
+        echo $phpcs->getOutput();
+        echo $phpcs->getErrorOutput();
+        $io->success('Classes have been beautyfied');
     }
 }

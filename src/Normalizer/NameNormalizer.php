@@ -18,36 +18,6 @@ class NameNormalizer
      * @param string $name
      *
      * @return string
-     */
-    public static function normalizeName(string $name): string
-    {
-        $name = mb_convert_encoding(
-            $name,
-            'ASCII'
-        ); // This replaces non-ascii characters with ?
-        preg_match_all('/_/', $name, $matches, PREG_OFFSET_CAPTURE, 1);
-        foreach ($matches[0] as $match) {
-            $position = $match[1];
-            $name[$position + 1] = strtoupper($name[$position + 1]);
-        }
-
-        $name = str_replace(
-            ['_', '?'],
-            ['', self::INVALID_CHAR_REPLACEMENT_CHAR],
-            $name
-        );
-
-        if (is_numeric($name[0])) {
-            $name = self::INVALID_CHAR_REPLACEMENT_CHAR.$name;
-        }
-
-        return $name;
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return string
      *
      * @throws \Exception
      */
@@ -66,6 +36,34 @@ class NameNormalizer
         }
 
         return $name;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return string
+     */
+    public static function normalizeName(string $name): string
+    {
+        $name = mb_convert_encoding(
+            $name,
+            'ASCII'
+        ); // This replaces non-ascii characters with ?
+        $name = str_replace(
+            ['-', '?'],
+            self::INVALID_CHAR_REPLACEMENT_CHAR,
+            $name
+        );
+
+        preg_match_all('/_/', $name, $matches, PREG_OFFSET_CAPTURE, 1);
+        foreach ($matches[0] as $match) {
+            $position = $match[1];
+            $name[$position + 1] = strtoupper($name[$position + 1]);
+        }
+        if (is_numeric($name[0])) {
+            $name = self::INVALID_CHAR_REPLACEMENT_CHAR.$name;
+        }
+        return str_replace('_', '', $name);
     }
 
     /**

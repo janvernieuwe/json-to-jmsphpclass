@@ -1,35 +1,72 @@
 {
-  "dnsRecursive": false,
-  "granularity": "1m",
-  "providerId": "speedyrails",
-  "result10th": 83,
-  "result25th": 83,
-  "result75th": 82,
-  "result90th": 82,
-  "resultFastest": 82,
-  "resultMean": 83,
-  "resultMedian": 83,
-  "resultSlowest": 86,
-  "resultStdev": 0,
-  "rollupStart": "05\/26\/2018 17:00 PDT",
-  "rollupStop": "06\/06\/2018 09:00 PDT",
-  "serviceId": "speedyrails:vps",
-  "serviceName": "Speedyrails VPS",
-  "serviceType": "compute",
-  "source": "synthetic",
-  "totalRollups": 78,
-  "test": "icmp",
-  "testAsn": 0,
-  "testIterations": 77208,
-  "testIterationsFailed": 9,
-  "testIterationsSuccess": 77201,
-  "testIterationsWarmup": 0,
-  "testSize": 0,
-  "tests": 100839,
-  "testsFailed": 0,
-  "testsPartial": 347,
-  "testsSuccess": 100492,
-  "transfer": 0,
-  "uniqueAsns": 51,
-  "uplink": false
+    "lists": [
+        {
+            "teamIds": [],
+            "portalId": 6239644,
+            "createdAt": 1565103323209,
+            "listId": 1,
+            "updatedAt": 1565103323209,
+            "metaData": {
+                "listReferencesCount": null,
+                "parentFolderId": null,
+                "lastProcessingStateChangeAt": 1565103338896,
+                "error": "",
+                "lastSizeChangeAt": 1565103338901,
+                "processing": "DONE",
+                "size": 0
+            },
+            "authorId": 8557564,
+            "listType": "DYNAMIC",
+            "archived": false,
+            "internalListId": 1,
+            "dynamic": true,
+            "filters": [
+                [
+                    {
+                        "operator": "EQ",
+                        "filterFamily": "PropertyValue",
+                        "withinTimeMode": "PAST",
+                        "type": "bool",
+                        "property": "hs_content_membership_email_confirmed",
+                        "value": false
+                    }
+                ]
+            ],
+            "name": "Test list 1"
+        },
+        {
+            "teamIds": [],
+            "portalId": 6239644,
+            "createdAt": 1565103472435,
+            "listId": 2,
+            "updatedAt": 1565103472435,
+            "metaData": {
+                "listReferencesCount": null,
+                "parentFolderId": null,
+                "lastProcessingStateChangeAt": 1565103488669,
+                "error": "",
+                "lastSizeChangeAt": 1565103488675,
+                "processing": "DONE",
+                "size": 2
+            },
+            "authorId": 8557564,
+            "listType": "DYNAMIC",
+            "archived": false,
+            "internalListId": 2,
+            "dynamic": true,
+            "filters": [
+                [
+                    {
+                        "operator": "HAS_NOT_PRIVACY_CONSENT",
+                        "filterFamily": "PrivacyConsent",
+                        "withinTimeMode": "PAST",
+                        "value": "privacy_consent_approve"
+                    }
+                ]
+            ],
+            "name": "Test list 2"
+        }
+    ],
+    "offset": 20,
+    "has-more": false
 }
